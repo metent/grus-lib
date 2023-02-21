@@ -2,9 +2,10 @@ pub mod reader;
 pub mod types;
 pub mod writer;
 
+pub use sanakirja::Error;
 use std::io::{Error as IoError, ErrorKind};
 use std::path::Path;
-use sanakirja::{Commit, Env, Error, LoadPage, RootDb};
+use sanakirja::{Commit, Env, LoadPage, RootDb};
 use sanakirja::btree;
 use reader::StoreReader;
 use types::{DueDatesDb, LinksDb, NamesDb, RLinksDb, RSessionsDb, SessionsDb};
