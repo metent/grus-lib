@@ -36,12 +36,21 @@ impl<T: LoadPage<Error = Error>> StoreRw<T> {
 		})
 	}
 
-	pub fn sessions<'s>(&'s self, id: u64) -> Result<impl Iterator<Item = Result<(&'s u64, &'s Session), Error>>, Error> {
+	pub fn sessions<'r>(&'r self, id: u64) -> Result<impl Iterator<Item = Result<(&'r u64, &'r Session), Error>>, Error> {
 		let iter = btree::iter(&self.txn, &self.sessions, Some((&id, None)))?;
 		Ok(iter.take_while(move |entry| match entry {
 			Ok((&eid, _)) if eid > id => false,
 			_ => true,
 		}))
+	}
+
+	pub fn all_names<'r>(&'r self) -> Result<impl Iterator<Item = Result<(&'r u64, &'r str), Error>>, Error> {
+		Ok(
+			btree::iter(&self.txn, &self.names, None)?
+			.map(|item| item.and_then(|(id, name)| Ok((
+				id, str::from_utf8(name).map_err(|_| invalid_data_error())?
+			))))
+		)
 	}
 
 	pub fn all_sessions<'s>(&'s self) -> Result<impl Iterator<Item = Result<(&'s Session, &'s u64), Error>>, Error> {
