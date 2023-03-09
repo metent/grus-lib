@@ -10,6 +10,7 @@ pub type StoreWriter<'env> = StoreRw<MutTxn<&'env Env, ()>>;
 
 impl<'env> StoreWriter<'env> {
 	pub fn add_child(&mut self, pid: u64, name: &str) -> Result<u64, Error> {
+		assert_ne!(name.len(), 0);
 		let next = self.get_child(pid)?.unwrap_or(0);
 
 		let id = self.id;
