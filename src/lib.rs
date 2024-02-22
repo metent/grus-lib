@@ -67,22 +67,24 @@ impl Store {
 		match (id, links, rlinks, names, due_dates, sessions, rsessions) {
 			(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_)) => Ok(()),
 			(None, None, None, None, None, None, None) => {
-				let links: LinksDb = btree::create_db(&mut txn)?;
-				let rlinks: RLinksDb = btree::create_db(&mut txn)?;
-				let mut names: NamesDb = btree::create_db_(&mut txn)?;
-				let due_dates: DueDatesDb = btree::create_db(&mut txn)?;
-				let sessions: SessionsDb = btree::create_db(&mut txn)?;
-				let rsessions: RSessionsDb = btree::create_db(&mut txn)?;
+				unsafe {
+					let links: LinksDb = btree::create_db(&mut txn)?;
+					let rlinks: RLinksDb = btree::create_db(&mut txn)?;
+					let mut names: NamesDb = btree::create_db_(&mut txn)?;
+					let due_dates: DueDatesDb = btree::create_db(&mut txn)?;
+					let sessions: SessionsDb = btree::create_db(&mut txn)?;
+					let rsessions: RSessionsDb = btree::create_db(&mut txn)?;
 
-				btree::put(&mut txn, &mut names, &0, b"/")?;
+					btree::put(&mut txn, &mut names, &0, b"/")?;
 
-				txn.set_root(ID_SQ, 1);
-				txn.set_root(DB_LINKS, links.db);
-				txn.set_root(DB_RLINKS, rlinks.db);
-				txn.set_root(DB_NAMES, names.db);
-				txn.set_root(DB_DUE_DATES, due_dates.db);
-				txn.set_root(DB_SESSIONS, sessions.db);
-				txn.set_root(DB_RSESSIONS, rsessions.db);
+					txn.set_root(ID_SQ, 1);
+					txn.set_root(DB_LINKS, links.db.into());
+					txn.set_root(DB_RLINKS, rlinks.db.into());
+					txn.set_root(DB_NAMES, names.db.into());
+					txn.set_root(DB_DUE_DATES, due_dates.db.into());
+					txn.set_root(DB_SESSIONS, sessions.db.into());
+					txn.set_root(DB_RSESSIONS, rsessions.db.into());
+				}
 				txn.commit()
 			}
 			_ => {

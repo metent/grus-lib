@@ -155,12 +155,12 @@ impl<'env> StoreWriter<'env> {
 
 	pub fn commit(mut self) -> Result<(), Error> {
 		self.txn.set_root(ID_SQ, self.id);
-		self.txn.set_root(DB_LINKS, self.links.db);
-		self.txn.set_root(DB_RLINKS, self.rlinks.db);
-		self.txn.set_root(DB_NAMES, self.names.db);
-		self.txn.set_root(DB_DUE_DATES, self.due_dates.db);
-		self.txn.set_root(DB_SESSIONS, self.sessions.db);
-		self.txn.set_root(DB_RSESSIONS, self.rsessions.db);
+		self.txn.set_root(DB_LINKS, self.links.db.into());
+		self.txn.set_root(DB_RLINKS, self.rlinks.db.into());
+		self.txn.set_root(DB_NAMES, self.names.db.into());
+		self.txn.set_root(DB_DUE_DATES, self.due_dates.db.into());
+		self.txn.set_root(DB_SESSIONS, self.sessions.db.into());
+		self.txn.set_root(DB_RSESSIONS, self.rsessions.db.into());
 		self.txn.commit()
 	}
 
